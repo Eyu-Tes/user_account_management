@@ -19,16 +19,21 @@ const app = express()
 process.env.NODE_ENV === 'development' && app.use(morgan('dev'))
 
 // handlebars helpers
-const {urlsEqual} = require('./controllers/helpers/hbs')
+const {urlsEqual, setChecked} = require('./controllers/helpers/hbs')
 
 // register handlebars as view engine (.hbs extension)
 app.engine('.hbs', exphbs({
     helpers: {
-        urlsEqual
+        urlsEqual, 
+        setChecked
     },
     extname: '.hbs'
 }))
 app.set('view engine', '.hbs')
+
+// body parser (form + json)
+app.use(express.urlencoded({extended: false}))
+app.use(express.json())
 
 // global variables
 app.use((req, res, next) => {
@@ -39,6 +44,7 @@ app.use((req, res, next) => {
 
 // load router
 app.use('/', require('./routes/index'))
+app.use('/account', require('./routes/account'))
 
 // set static folder
 app.use(express.static(path.join(__dirname, 'public')))

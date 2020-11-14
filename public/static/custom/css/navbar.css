@@ -12,16 +12,16 @@
     height: 30px;
 }
 
-@media(max-width: 575.98px) {
-    .navbar-brand {
-        font-size: 1.35rem !important;
-    }
-}
-
 @media(max-width: 991.98px) {
     .navbar-brand {
         font-size: 1.5rem !important;
         padding-right: 15px;
+    }
+}
+
+@media(max-width: 575.98px) {
+    .navbar-brand {
+        font-size: 1.35rem !important;
     }
 }
 
@@ -32,6 +32,12 @@
 .navbar-nav .nav-link {
     color: #fff;
     font-size: 1.25rem;
+}
+
+@media(min-width: 992px) {
+    .navbar-nav .nav-link {
+        margin-right: 20px;
+    }
 }
 
 .navbar-nav:last-of-type {

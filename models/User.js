@@ -10,31 +10,31 @@ const validateEmail = (email) => {
 const UserSchema = new mongoose.Schema({
     username: {
         type: String, 
-        required: [true, 'This field is required'],
-        maxlength: [30, 'Username cannot exceed 30 characters'],
+        required: [true, 'username cannot be empty'],
+        maxlength: [30, 'username cannot exceed 30 characters'],
         trim: true
     }, 
     email: {
         type: String, 
-        required: [true, 'This field is required'], 
+        required: [true, 'email cannot be empty'], 
         unique: true,       // NB: 'unique' option for schemas is not a validator 
-        validate: [validateEmail, 'Please fill in a valid email address'],
+        validate: [validateEmail, 'please fill in a valid email address'],
         trim: true  
     }, 
-    phoneNumber: {
+    password: {
         type: String, 
-        default: '_',
+        required: [true, 'password cannot be empty'], 
+        minlength: [4, 'password must be atleast 4 characters long'], 
+        maxlength: [12, 'password cannot exceed 12 characters'], 
+    }, 
+    phone: {
+        type: String, 
         trim: true, 
     }, 
     sex: {
         type: String, 
         enum: ['male', 'female']
     }, 
-    slug: {
-        type: String, 
-        index: true,
-        default: () => `${this.username}-${this.email}`
-    },
     dateJoined: {
         type: Date, 
         default: Date.now
@@ -42,7 +42,7 @@ const UserSchema = new mongoose.Schema({
 })
 
 // apply the uniqueValidator plugin to UserSchema
-UserSchema.plugin(uniqueValidator, {message: 'User with this email already exists'})
+UserSchema.plugin(uniqueValidator, {message: 'user with this email already exists'})
 
 // create and export model
-module.exports = mongoose.Model('User', UserSchema)
+module.exports = mongoose.model('User', UserSchema)
