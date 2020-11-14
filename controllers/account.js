@@ -33,12 +33,15 @@ module.exports.registerUser = async (req, res) => {
         })
         // save user (commit change)
         await newUser.save()
+
+        req.flash('success_msg', "You're now registered. You can log in.")
         res.redirect('/account/login')
     } catch (error) {
         console.log(error)
         res.render('account/register', {
             ...req.body, 
-            error
+            error, 
+            failure_msg: "Unable to create account. Try again, following the instrucitons."
         })
     }
 }

@@ -45,6 +45,10 @@ a, input, button, select, textarea {
     font-size: .64rem;
 }
 
+.alert {
+    border-radius: 0 !important;
+}
+
 .form {
     max-width: 600px;
     margin: 0 auto;

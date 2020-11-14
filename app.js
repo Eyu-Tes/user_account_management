@@ -3,6 +3,8 @@ const express = require('express')
 const dotenv = require('dotenv')
 const morgan = require('morgan')
 const exphbs = require('express-handlebars')
+const session = require('express-session')
+const flash = require('connect-flash')
 
 const connectDB = require('./config/db')
 
@@ -35,10 +37,22 @@ app.set('view engine', '.hbs')
 app.use(express.urlencoded({extended: false}))
 app.use(express.json())
 
+// sessions
+app.use(session({
+    secret: 'secret', 
+    resave: false,
+    saveUninitialized: false,
+}))
+
+// connect flash
+app.use(flash())
+
 // global variables
 app.use((req, res, next) => {
     res.locals.path = req.url
     res.locals.user = req.user 
+    res.locals.success_msg = req.flash('success_msg')
+    res.locals.failure_msg = req.flash('failure_msg')
     next()
 })
 
