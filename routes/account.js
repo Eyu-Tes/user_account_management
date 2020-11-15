@@ -7,7 +7,9 @@ const {
     logoutUser, 
     showProfile,
     showUpdateUser, 
-    updateUser
+    updateUser, 
+    showDeleteUser, 
+    deleteUser
 } = require('../controllers/account')
 
 const router = express.Router()
@@ -32,5 +34,10 @@ router.get('/', showProfile)
 router.route('/update')
 .get(showUpdateUser)              // @method  GET
 .post(updateUser)                // @method POST
+
+// @route   /account/delete
+router.route('/delete')
+.get(showDeleteUser)            // @method  GET
+.post(deleteUser)               // @method POST
 
 module.exports = router

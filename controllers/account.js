@@ -117,3 +117,27 @@ module.exports.updateUser = async (req, res) => {
         })
     }
 }
+
+// @desc    show delete user confirmation
+module.exports.showDeleteUser = async (req, res) => {
+    try {
+        const user = await User.findOne({_id: req.user.id}).lean()
+        res.render('account/remove', {
+            ...user
+        })
+    } catch (error) {
+        console.log(error)
+        res.redirect('/')
+    }
+}
+
+// @desc    process delete
+module.exports.deleteUser = async (req, res) => {
+    try {
+        await User.deleteOne({_id: req.user.id})
+        req.flash('success_msg', 'your account has been removed')
+        res.redirect('/')
+    } catch (error) {
+        console.log(error)
+    }
+}
