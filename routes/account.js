@@ -4,7 +4,10 @@ const {
     registerUser, 
     showLoginUser, 
     loginUser, 
-    logoutUser
+    logoutUser, 
+    showProfile,
+    showUpdateUser, 
+    updateUser
 } = require('../controllers/account')
 
 const router = express.Router()
@@ -21,5 +24,13 @@ router.route('/login')
 
 // @route   GET /account/logout
 router.get('/logout', logoutUser)
+
+// @route   GET /account
+router.get('/', showProfile)
+
+// @route   /account/update
+router.route('/update')
+.get(showUpdateUser)              // @method  GET
+.post(updateUser)                // @method POST
 
 module.exports = router

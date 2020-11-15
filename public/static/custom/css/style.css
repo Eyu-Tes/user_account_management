@@ -62,3 +62,7 @@ a, input, button, select, textarea {
 .form-control {
     border-radius: 0;
 }
+
+.text-muted a{
+    text-decoration: none !important;
+}

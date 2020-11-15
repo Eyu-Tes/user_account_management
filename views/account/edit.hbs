@@ -1,0 +1,46 @@
+<form action="/account/update" method="POST" novalidate id="signin-form">
+    <h3 class="mb-4 pb-2 border-bottom">User Profile</h3>
+    <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" name="username" id="name" value="{{username}}" class="form-control font-control-sm" autofocus>
+        {{#if errors.username}}
+        <small class="invalid-feedback d-block">{{errors.username}}</small>
+        {{else}}
+        <small class="text-muted">max characters allowed is 30</small>
+        {{/if}}
+    </div>
+    <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" name="email" id="email" value="{{email}}" class="form-control" placeholder="example@email.com">
+        {{#if errors.email}}
+        <small class="invalid-feedback d-block">{{errors.email}}</small>
+        {{else}}
+        <small class="text-muted">make sure email is unique</small>
+        {{/if}}
+    </div>
+    <div class="form-group">
+        <label for="phone">Phone Number</label>
+        <input type="text" name="phone" id="phone" value="{{phone}}" class="form-control" placeholder="+2519xxxxxxxx">
+        <small class="invalid-feedback d-block">{{error.errors.phone}}</small>
+    </div>
+    <div class="form-group">
+        <label for="category">Sex</label>
+        <div class="d-block">
+            {{!-- setChecked is a custom helper function to get the selected option --}}
+            {{!-- use triple curly braces to parse HTML  --}}
+            <div class="custom-control custom-radio custom-control-inline">
+                <input type="radio" id="male" name="sex" value="male" {{{setChecked 'male' sex}}} class="custom-control-input">
+                <label class="custom-control-label" for="male">male</label>
+            </div>
+            <div class="custom-control custom-radio custom-control-inline">
+                <input type="radio" id="female" name="sex" value="female" {{{setChecked 'female' sex}}} class="custom-control-input">
+                <label class="custom-control-label" for="female">female</label>
+            </div>
+        </div>
+    </div>
+    <input type="submit" value="Save" class="btn btn-block btn-warning my-4">
+
+    <small class="text-muted text-primary">
+		<a class="d-inline" href="/">Change Password</a>
+	</small>
+</form>

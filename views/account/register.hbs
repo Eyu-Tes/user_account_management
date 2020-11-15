@@ -5,16 +5,22 @@
             <div class="form-group">
                 <label for="username">Username</label>
                 <input type="text" name="username" id="name" value="{{username}}" class="form-control font-control-sm" autofocus>
-                <small class="invalid-feedback d-block">{{error.errors.username}}</small>
+                {{#if errors.username}}
+                <small class="invalid-feedback d-block">{{errors.username}}</small>
+                {{else}}
                 <small class="text-muted">max characters allowed is 30</small>
+                {{/if}}
             </div>
         </div>
         <div class="col-md-6">
             <div class="form-group">
                 <label for="email">Email</label>
                 <input type="email" name="email" id="email" value="{{email}}" class="form-control" placeholder="example@email.com">
-                <small class="invalid-feedback d-block">{{error.errors.email}}</small>
+                {{#if errors.email}}
+                <small class="invalid-feedback d-block">{{errors.email}}</small>
+                {{else}}
                 <small class="text-muted">make sure email is unique</small>
+                {{/if}}
             </div>
         </div>
     </div>
@@ -23,7 +29,7 @@
             <div class="form-group">
                 <label for="phone">Phone Number</label>
                 <input type="text" name="phone" id="phone" value="{{phone}}" class="form-control" placeholder="+2519xxxxxxxx">
-                <small class="invalid-feedback d-block">{{error.errors.phone}}</small>
+                <small class="invalid-feedback d-block">{{errors.phone}}</small>
             </div>
         </div>
         <div class="col-md-6">
@@ -49,16 +55,22 @@
             <div class="form-group">
                 <label for="password">Password</label>
                 <input type="password" name="password" id="password" class="form-control">
-                <small class="invalid-feedback d-block">{{error.errors.password}}</small>
-                <small class="text-muted">password must be 4 to 12 characters long</small>
+                {{#if errors.password}}
+                <small class="invalid-feedback d-block">{{errors.password}}</small>
+                {{else}}
+                <small class="text-muted">password must be atleast 4 characters long</small>
+                {{/if}}
             </div>
         </div>
         <div class="col-md-6">
             <div class="form-group">
                 <label for="password2">Confirm Password</label>
                 <input type="password" name="password2" id="password2" class="form-control">
-                <small class="invalid-feedback d-block">{{error.errors.password2}}</small>
+                {{#if errors.password2}}
+                <small class="invalid-feedback d-block">{{errors.password2}}</small>
+                {{else}}
                 <small class="text-muted">enter the previous password</small>
+                {{/if}}
             </div>
         </div>
     </div>

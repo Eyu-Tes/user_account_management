@@ -37,7 +37,7 @@ app.engine('.hbs', exphbs({
         setChecked
     },
     extname: '.hbs', 
-    // Removes error -> Handlebars: Access has been denied to resolve the property
+    // Removes error -> Handlebars: Access has been denied to resolve the property ...
     runtimeOptions: {
         allowProtoPropertiesByDefault: true,
         allowProtoMethodsByDefault: true

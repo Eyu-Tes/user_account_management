@@ -9,7 +9,7 @@ module.exports.showRegisterUser = (req, res) => res.render('account/register')
 module.exports.registerUser = async (req, res) => {
     let errorFound = false
     try {
-        const newUser = new User({...req.body})
+        const newUser = await new User({...req.body})
         let error = newUser.validateSync() || {errors: {}}
         if (req.body.password2.trim() === ''){
             errorFound = true
@@ -30,18 +30,18 @@ module.exports.registerUser = async (req, res) => {
             bcrypt.hash(newUser.password, salt, (err, hash) => {
                 if (err) throw(err)
                 newUser.password = hash
+                /* Make sure to save user inside this callback */
+                // save user (commit change)
+                newUser.save()
+                req.flash('success_msg', "You're now registered. You can log in.")
+                res.redirect('/account/login')
             })
         })
-        // save user (commit change)
-        await newUser.save()
-
-        req.flash('success_msg', "You're now registered. You can log in.")
-        res.redirect('/account/login')
     } catch (error) {
         console.log(error)
         res.render('account/register', {
             ...req.body, 
-            error, 
+            ...error, 
             failure_msg: "Unable to create account. Try again, following the instrucitons."
         })
     }
@@ -66,4 +66,54 @@ module.exports.logoutUser = (req, res) => {
     req.logout()
     req.flash('success_msg', 'you are logged out')
     res.redirect('/')
+}
+
+// @desc    show profile page
+module.exports.showProfile = async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id).lean()
+        res.render('account/profile', {
+            ...user
+        })
+    } catch (error) {
+        console.log(error)
+        res.redirect('/')
+    }
+}
+
+// @desc    show update page
+module.exports.showUpdateUser = async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id).lean()
+        res.render('account/edit', {
+            ...user
+        })
+    } catch (error) {
+        console.log(error)
+        res.redirect('/')
+    }
+}
+
+// @desc    process update
+module.exports.updateUser = async (req, res) => {
+    try {
+        const updatedUser = await User.findOneAndUpdate({_id: req.user.id}, req.body, {
+            // return the modified document rather than the original
+            new: true,
+            // runs validators 
+            runValidators: true,
+            // prevents the error: Cannot read property 'ownerDocument' of null
+            // lets you set the value of 'this' in update validators to the underlying query.
+            context: 'query'
+        })
+        let error = updatedUser.validateSync()
+        if(error) throw(error)
+        req.flash('success_msg', 'your profile has been updated')
+        res.redirect('/account')
+    } catch (error) {
+        res.render('account/edit', {
+            ...req.body, 
+            ...error
+        })
+    }
 }
