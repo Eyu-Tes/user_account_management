@@ -1,5 +1,6 @@
 const User = require('../models/User')
 const bcrypt = require('bcryptjs')
+const passport = require('passport')
 
 // @desc    show registration page
 module.exports.showRegisterUser = (req, res) => res.render('account/register')
@@ -48,3 +49,21 @@ module.exports.registerUser = async (req, res) => {
 
 // @desc    show login page
 module.exports.showLoginUser = (req, res) => res.render('account/login')
+
+// @desc    process login
+module.exports.loginUser = (req, res, next) => {
+    passport.authenticate('local', {
+        successRedirect: '/', 
+        successFlash: 'login successful',
+        failureRedirect: '/account/login', 
+        failureFlash: true,     // message is generated from the passport LocalStrategy config
+    })(req, res, next)
+}
+
+// @desc    process logout
+module.exports.logoutUser = (req, res) => {
+    // the passport middleware gives access to the logout function
+    req.logout()
+    req.flash('success_msg', 'you are logged out')
+    res.redirect('/')
+}

@@ -24,12 +24,12 @@
             {{#if user}}
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="/" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                        {{user.name}}
+                        {{user.username}}
                     </a>
                     <div class="dropdown-menu dropdown-menu-right">
                         <a class="dropdown-item" href="/">Profile</a>
                         <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="/">Logout</a>
+                        <a class="dropdown-item" href="/account/logout">Logout</a>
                     </div>
                 </li>
             {{else}}

@@ -49,8 +49,13 @@ a, input, button, select, textarea {
     border-radius: 0 !important;
 }
 
-.form {
+#signup-form {
     max-width: 600px;
+    margin: 0 auto;
+}
+
+#signin-form {
+    max-width: 400px;
     margin: 0 auto;
 }
 
