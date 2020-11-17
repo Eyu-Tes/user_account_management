@@ -9,7 +9,7 @@ module.exports.showRegisterUser = (req, res) => res.render('account/register')
 module.exports.registerUser = async (req, res) => {
     let errorFound = false
     try {
-        const newUser = await new User({...req.body})
+        const newUser = new User({...req.body})
         let error = newUser.validateSync() || {errors: {}}
         if (req.body.password2.trim() === ''){
             errorFound = true
@@ -27,18 +27,25 @@ module.exports.registerUser = async (req, res) => {
         }
         // hash password
         bcrypt.genSalt(10, (err, salt) => {
-            bcrypt.hash(newUser.password, salt, (err, hash) => {
-                if (err) throw(err)
-                newUser.password = hash
-                /* Make sure to save user inside this callback */
-                // save user (commit change)
-                newUser.save()
-                req.flash('success_msg', "You're now registered. You can log in.")
-                res.redirect('/account/login')
+            bcrypt.hash(newUser.password, salt, async (err, hash) => {
+                try {
+                    if (err) throw(err)
+                    newUser.password = hash
+                    /* Make sure to save user inside this callback */
+                    // save user (commit change)
+                    await newUser.save()
+                    req.flash('success_msg', "You're now registered. You can log in.")
+                    res.redirect('/account/login')
+                } catch (error) {
+                    res.render('account/register', {
+                        ...req.body, 
+                        ...error, 
+                        failure_msg: "Unable to create account. Try again, following the instrucitons."
+                    })
+                }
             })
         })
     } catch (error) {
-        console.log(error)
         res.render('account/register', {
             ...req.body, 
             ...error, 
@@ -139,5 +146,70 @@ module.exports.deleteUser = async (req, res) => {
         res.redirect('/')
     } catch (error) {
         console.log(error)
+    }
+}
+
+// @desc    show change passowrd
+module.exports.showChangePassword = (req, res) => {
+    res.render('account/password/change')
+}
+
+// @desc    show change passowrd
+module.exports.changePassword = async (req, res) => {
+    try {
+        let error = {errors:{}}, errorFound = false
+        for(let field in req.body){
+            if (req.body[field] === '') {
+                errorFound = true
+                error.errors[field] = 'field cannot be empty'
+            }
+        }
+        if (!errorFound) {
+            const {old_password, password, password2} = req.body
+            let user = await User.findById(req.user.id)
+            // check password
+            bcrypt.compare(old_password, user.password)
+            .then(isMatch => {
+                if(isMatch) {
+                    if(password === password2) {
+                        user.password = req.body.password
+                        error = user.validateSync()
+                        if (error) throw (error)
+                        // hash password
+                        bcrypt.genSalt(10, (err, salt) => {
+                            bcrypt.hash(password, salt, (err, hash) => {
+                                if (err) throw(err)
+                                user.password = hash
+                                /* Make sure to save user inside this callback */
+                                // save user (commit change)
+                                user.save()
+                                req.flash('success_msg', "password changed")
+                                res.redirect('/account')
+                            })
+                        })
+                    }
+                    else {
+                        error.errors['password2'] = 'passwords do not match'
+                        throw ""
+                    }
+                }
+                else {
+                    error.errors['old_password'] = 'please enter your old password correctly'
+                    throw ""
+                }
+            })
+            .catch(err => {
+                res.render('account/password/change', {
+                    ...error
+                })
+            })       
+        }
+        else {
+            throw(error)
+        }
+    } catch(error) {
+        res.render('account/password/change', {
+            ...error
+        })
     }
 }

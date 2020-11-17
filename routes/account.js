@@ -9,7 +9,9 @@ const {
     showUpdateUser, 
     updateUser, 
     showDeleteUser, 
-    deleteUser
+    deleteUser, 
+    showChangePassword, 
+    changePassword
 } = require('../controllers/account')
 
 const router = express.Router()
@@ -39,5 +41,11 @@ router.route('/update')
 router.route('/delete')
 .get(showDeleteUser)            // @method  GET
 .post(deleteUser)               // @method POST
+
+
+// @route   /account/password/change
+router.route('/password/change')
+.get(showChangePassword)            // @method  GET
+.post(changePassword)               // @method POST
 
 module.exports = router
