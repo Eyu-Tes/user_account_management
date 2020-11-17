@@ -34,6 +34,15 @@ const UserSchema = new mongoose.Schema({
         type: String, 
         enum: ['male', 'female']
     }, 
+    /* --- temporary reset properties --- */
+    resetPasswordToken: {
+        type: String,
+        required: false
+    },
+    resetPasswordExpires: {
+        type: Date,
+        required: false
+    },
     dateJoined: {
         type: Date, 
         default: Date.now

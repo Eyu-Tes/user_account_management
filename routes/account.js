@@ -11,7 +11,11 @@ const {
     showDeleteUser, 
     deleteUser, 
     showChangePassword, 
-    changePassword
+    changePassword, 
+    showForgotPassword, 
+    sendResetEmail,
+    showResetPassword, 
+    resetPassword
 } = require('../controllers/account')
 
 const router = express.Router()
@@ -47,5 +51,15 @@ router.route('/delete')
 router.route('/password/change')
 .get(showChangePassword)            // @method  GET
 .post(changePassword)               // @method POST
+
+// @route   /account/password/reset
+router.route('/password/forgot')
+.get(showForgotPassword)                // @method  GET
+.post(sendResetEmail)               // @method POST
+
+// @route   /account/password/reset/:token
+router.route('/password/reset/:token')
+.get(showResetPassword)             // @method  GET
+.post(resetPassword)                 // @method GET
 
 module.exports = router

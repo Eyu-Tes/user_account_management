@@ -1,6 +1,10 @@
-const User = require('../models/User')
+const crypto = require('crypto')
+const {promisify} = require('util')
 const bcrypt = require('bcryptjs')
 const passport = require('passport')
+
+const {transporter} = require('../config/mail')
+const User = require('../models/User')
 
 // @desc    show registration page
 module.exports.showRegisterUser = (req, res) => res.render('account/register')
@@ -209,6 +213,117 @@ module.exports.changePassword = async (req, res) => {
         }
     } catch(error) {
         res.render('account/password/change', {
+            ...error
+        })
+    }
+}
+
+// @desc    show forgot password
+module.exports.showForgotPassword = (req, res) => {
+    res.render('account/password/forgot')
+}
+
+// @desc    process forgot password
+module.exports.sendResetEmail = async (req, res) => {
+    let error = {errors: {}}
+    try {
+        if (req.body.email.trim() === '') {
+            error.errors['email'] = "field cannot be empty"
+            throw ''
+        }
+        const user = await User.findOne({email: req.body.email})
+        if(!user) {
+            error.errors['email'] = "there is no user with this email"
+            throw ''
+        }
+        // create token
+        const token = (await promisify(crypto.randomBytes)(20)).toString('hex')
+        user.resetPasswordToken = token
+        user.resetPasswordExpires = Date.now() + 3600000    // expires in an hour
+        await user.save()
+
+        const resetEmail = {
+            to: req.body.email,
+            from: process.env.EMAIL_USER,
+            subject: `Password reset on ${req.headers.host}`,
+            text: `
+                You are receiving this because you have requested a password reset for your account.
+                Please click on the following link, or paste this into your browser to complete the process:
+                http://${req.headers.host}/account/password/reset/${token}
+                
+                If you did not request this, please ignore this email and your password will remain unchanged.
+            `,
+        }
+        await transporter.sendMail(resetEmail)
+        res.render('account/password/email_sent')
+    } catch (err) {
+        res.render('account/password/forgot', {
+            email: req.body.email,
+            ...error
+        })
+    }
+}
+
+// @desc    show reset page
+module.exports.showResetPassword = async (req, res) => {
+    try {
+        const user = await User.find({
+            resetPasswordToken: req.params.token, 
+            resetPasswordExpires: {$gt : Date.now()}
+        })
+        if(user.length < 1) throw ''
+
+        res.render('account/password/reset', {
+            token: req.params.token
+        })
+    } catch (error) {
+        req.flash('error', 'Password reset token is invalid or has expired.')
+        res.redirect('/account/password/forgot')
+    }
+}
+
+// @desc    process reset
+module.exports.resetPassword = async (req, res) => {
+    try {
+        let error = {errors: {}}
+        let user = await User.findOne({
+            resetPasswordToken: req.params.token, 
+            resetPasswordExpires: {$gt : Date.now()}
+        })
+        console.log(user)
+        if(!user) throw ''
+        
+        const {password, password2} = req.body
+        for(let field in req.body) {
+            if (req.body[field] === '') {
+                error.errors[field] = 'field cannot be empty'
+            }
+        }
+        if(password !== password2) {
+            error.errors.password2 = 'passwords do not match'
+        }
+
+        if(Object.keys(error.errors).length > 0) throw (error)
+
+        user.password = password
+        // remove reset properties
+        user.resetPasswordToken = undefined
+        user.resetPasswordExpires = undefined
+
+        error = user.validateSync()
+        if (error) throw (error)
+
+        // hash password
+        const salt = await bcrypt.genSalt(10)
+        const hash = await bcrypt.hash(password, salt)
+        user.password = hash
+        user.save()
+
+        req.flash('success_msg', 'Password reset complete. You may login now.')
+        res.redirect('/account/login')
+    } catch (error) {
+        res.render('account/password/reset', {
+            token: req.params.token,
             ...error
         })
     }
